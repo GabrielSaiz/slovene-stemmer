@@ -19,7 +19,7 @@ public class SloveneStemmer extends SnowballProgram {
         int len = this.limit;
         for (int i = 0; i < 4; i++) {
             len = stem(getCurrentBuffer(), len);
-            this.setCurrent(getCurrentBuffer(), len);
+            this.setCurrent(new String(getCurrentBuffer(), 0, len));
         }
 
         return true;
@@ -31,11 +31,11 @@ public class SloveneStemmer extends SnowballProgram {
 
     private int removeCase(char[] s, int len) {
         if (greaterThan8(s, len)) {
-            len = len - 5;
+            return len - 5;
         }
 
         if (greaterThan7(s, len)) {
-            len = len - 4;
+            return len - 4;
         }
 
         if (greaterThan6_large_suffix(s, len)) {
@@ -47,8 +47,11 @@ public class SloveneStemmer extends SnowballProgram {
         }
 
         if (greaterThan5_extended_suffix(s, len)) {
-            len--;
-            return checkSoglasniki(s, len);
+            return len - 1;
+        }
+
+        if (checkSoglasniki(s, len)) {
+            return len - 1;
         }
 
         if (greaterThan5(s, len)) {
@@ -57,14 +60,8 @@ public class SloveneStemmer extends SnowballProgram {
         return len;
     }
 
-    private int checkSoglasniki(char[] s, int len) {
-        if (len > 6 && SOGLASNIKI.contains(s[len - 1])) {
-            len--;
-            if (SOGLASNIKI.contains(s[len - 1])) {
-                len--;
-            }
-        }
-        return len;
+    private boolean checkSoglasniki(char[] s, int len) {
+        return len > 6 && SOGLASNIKI.contains(s[len - 1]);
     }
 
     private boolean greaterThan8(char[] s, int len) {
@@ -156,5 +153,6 @@ public class SloveneStemmer extends SnowballProgram {
                 || StemmerUtil.endsWith(s, len, "o")
                 || StemmerUtil.endsWith(s, len, "u"));
     }
+
 
 }
